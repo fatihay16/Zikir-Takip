@@ -110,8 +110,27 @@ main{max-width:1680px;padding:25px 30px 40px}
 .today-pill span{color:#b58b36}
 @media(max-width:700px){.today-pill{gap:6px}}
 </style>
-</head>
+<style>
+#appSplash{position:fixed;inset:0;z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 35%,#245b42 0,#103b2b 52%,#08271c 100%);color:#f4d98f;transition:opacity .45s ease,visibility .45s ease}
+#appSplash.hide{opacity:0;visibility:hidden;pointer-events:none}
+.splash-mark{width:104px;height:104px;border:1px solid #d9ad4b88;border-radius:32px;display:grid;place-items:center;box-shadow:0 0 0 9px #d9ad4b12,0 18px 55px #0003;margin-bottom:25px;background:#ffffff08}
+.splash-mark svg{width:67px;height:67px;filter:drop-shadow(0 0 12px #f5d98a55)}
+.splash-title{font:normal 27px Georgia,serif;letter-spacing:.3px}
+.splash-subtitle{font:13px "Segoe UI",Arial,sans-serif;color:#e7d6a8;margin-top:10px;letter-spacing:.4px}
+.splash-loader{width:92px;height:2px;background:#ffffff25;border-radius:5px;margin-top:35px;overflow:hidden}
+.splash-loader span{display:block;width:40%;height:100%;background:#e1bd67;border-radius:5px;animation:splashLoad 1.1s ease-in-out infinite}
+@keyframes splashLoad{from{transform:translateX(-110%)}to{transform:translateX(260%)}}
+.mobile-nav button{min-height:48px;border-radius:12px;transition:background .18s,color .18s}
+.mobile-nav button.active{background:#f1d58e18;color:#f7d98c}
+.mobile-nav button.active svg{stroke:#f7d98c;filter:drop-shadow(0 0 4px #eacb7955)}
+@media(max-width:700px){.mobile-nav{padding-top:7px;padding-bottom:calc(7px + env(safe-area-inset-bottom));min-height:64px}.topbar{gap:8px}.datebox{gap:9px}.today-pill{font-size:10px;white-space:nowrap}.zikr{border-radius:10px}.counter .btn{min-height:35px}.check{width:21px;height:21px}}
+@media(prefers-reduced-motion:reduce){#appSplash,.mobile-nav button{transition:none}.splash-loader span{animation:none}}
+</style></head>
 <body>
+<div id="appSplash" aria-label="Günlük Zikir Takip açılıyor">
+ <div class="splash-mark"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M43.5 7.5A25.5 25.5 0 1 0 56 45.2 22.6 22.6 0 0 1 43.5 7.5Z" fill="currentColor"/><path d="M12 55h40" stroke="#d9ad4b" stroke-width="2.4" stroke-linecap="round"/></svg></div>
+ <div class="splash-title">Günlük Zikir Takip</div><div class="splash-subtitle">Her gün, huzura bir adım</div><div class="splash-loader"><span></span></div>
+</div>
 <div class="app">
 <aside class="sidebar">
   <div class="brand"><div class="moon"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M32.8 5.8A19.2 19.2 0 1 0 42.2 34 17 17 0 0 1 32.8 5.8Z" fill="currentColor"/><path d="M10 40h28" stroke="#d9ad4b" stroke-width="2" stroke-linecap="round"/></svg></div><h1>Günlük<br>Zikir Takip</h1></div>
@@ -187,7 +206,7 @@ main{max-width:1680px;padding:25px 30px 40px}
   </section>
 </main>
 </div>
-<nav class="mobile-nav"><button onclick="showPage('home')"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H14v-7h-4v7H3z"/></svg><span>Ana Sayfa</span></button><button onclick="showPage('history')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Geçmiş</span></button><button onclick="showPage('home');setTimeout(()=>document.getElementById('matik').scrollIntoView({behavior:'smooth'}),50)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg><span>Zikirmatik</span></button><button onclick="showPage('stats')"><svg viewBox="0 0 24 24"><path d="M4 19V9m8 10V4m8 15v-7"/></svg><span>İstatistik</span></button><button onclick="showPage('settings')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 13a7 7 0 0 0 0-2l2-1.5-2-3.5-2.3.8a7 7 0 0 0-1.7-1L14.5 3h-5L9 5.8a7 7 0 0 0-1.7 1L5 6l-2 3.5L5 11a7 7 0 0 0 0 2l-2 1.5L5 18l2.3-.8a7 7 0 0 0 1.7 1l.5 2.8h5l.5-2.8a7 7 0 0 0 1.7-1L19 18l2-3.5z"/></svg><span>Ayarlar</span></button></nav>
+<nav class="mobile-nav"><button data-page="home" onclick="showPage('home')"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H14v-7h-4v7H3z"/></svg><span>Ana Sayfa</span></button><button data-page="history" onclick="showPage('history')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Geçmiş</span></button><button onclick="showPage('home');setTimeout(()=>document.getElementById('matik').scrollIntoView({behavior:'smooth'}),50)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg><span>Zikirmatik</span></button><button data-page="stats" onclick="showPage('stats')"><svg viewBox="0 0 24 24"><path d="M4 19V9m8 10V4m8 15v-7"/></svg><span>İstatistik</span></button><button data-page="settings" onclick="showPage('settings')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 13a7 7 0 0 0 0-2l2-1.5-2-3.5-2.3.8a7 7 0 0 0-1.7-1L14.5 3h-5L9 5.8a7 7 0 0 0-1.7 1L5 6l-2 3.5L5 11a7 7 0 0 0 0 2l-2 1.5L5 18l2.3-.8a7 7 0 0 0 1.7 1l.5 2.8h5l.5-2.8a7 7 0 0 0 1.7-1L19 18l2-3.5z"/></svg><span>Ayarlar</span></button></nav>
 <script>
 const days=[
 [['300','Yâ Hafîz'],['1000','Lâ havle velâ kuvvete illâ billâhi’l-Aliyyi’l-Azîm'],['1000','Yâ Seriyy, Yâ Karîb']],
@@ -234,7 +253,7 @@ function flashMessage(message){
 }
 function showPage(page){
  ['home','history','stats','settings'].forEach(id=>{const el=document.getElementById('page-'+id);if(el)el.classList.toggle('hidden',id!==page)});
- document.querySelectorAll('.nav [data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
+ document.querySelectorAll('.nav [data-page],.mobile-nav [data-page]').forEach(b=>b.classList.toggle('active',b.dataset.page===page));
  if(page==='history')renderHistory();if(page==='stats')renderStats();
  window.scrollTo({top:0,behavior:'smooth'});
 }
@@ -305,4 +324,4 @@ render();
 <script>
 if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(err => console.warn("Çevrimdışı destek etkinleştirilemedi:", err))); }
 </script>
-</body></html>
+<script>window.addEventListener('load',()=>{const s=document.getElementById('appSplash');if(s)setTimeout(()=>s.classList.add('hide'),950)});</script></body></html>
