@@ -125,6 +125,52 @@ main{max-width:1680px;padding:25px 30px 40px}
 .mobile-nav button.active svg{stroke:#f7d98c;filter:drop-shadow(0 0 4px #eacb7955)}
 @media(max-width:700px){.mobile-nav{padding-top:7px;padding-bottom:calc(7px + env(safe-area-inset-bottom));min-height:64px}.topbar{gap:8px}.datebox{gap:9px}.today-pill{font-size:10px;white-space:nowrap}.zikr{border-radius:10px}.counter .btn{min-height:35px}.check{width:21px;height:21px}}
 @media(prefers-reduced-motion:reduce){#appSplash,.mobile-nav button{transition:none}.splash-loader span{animation:none}}
+</style><style>
+/* Mobile-first zikir row refinement */
+@media(max-width:700px){
+ main{padding:10px 9px 24px}
+ .topbar{padding:12px 13px;align-items:center;gap:8px}
+ .dateicon{width:39px;height:39px;border-radius:12px}
+ .datebox strong{font-size:14px;line-height:1.3}
+ .datebox small{font-size:10px}
+ .today-pill{padding:8px 9px;font-size:9px;border-radius:10px}
+ .panel{border-radius:17px}
+ .panel-title{font-size:20px;padding:16px 12px 13px}
+ .group{padding:0 10px 12px}
+ .group-head{font-size:14px;padding:11px 12px;margin:14px 0 7px;border-radius:11px}
+ .zikr{display:grid;grid-template-columns:23px minmax(0,1fr);gap:5px 8px;padding:12px 5px 11px;align-items:center;border-bottom:1px solid #e9e2d5}
+ .check{width:21px;height:21px;grid-column:1;grid-row:1}
+ .ztext{grid-column:2;grid-row:1;font-size:14px;line-height:1.5;font-weight:650;overflow-wrap:anywhere}
+ .ztext small{font-size:11px;margin-top:3px;line-height:1.3}
+ .counter{grid-column:2;grid-row:2;display:grid;grid-template-columns:minmax(70px,1fr) repeat(3, minmax(38px,.55fr));gap:6px;width:100%;justify-content:stretch;margin-top:7px}
+ .count{grid-column:1;min-width:0;padding:8px 5px;border-radius:9px;font-size:12px;white-space:nowrap}
+ .counter .btn{min-width:0;padding:8px 3px;font-size:11px;border-radius:9px;white-space:nowrap}
+ .counter .btn.reset{grid-column:1 / 2}
+ .counter .btn.complete{grid-column:2 / 5}
+ .counter .btn.done{grid-column:2 / 5}
+ .dua .zikr{grid-template-columns:minmax(0,1fr)}
+ .dua .counter{grid-column:1}
+ .sidecol{margin-top:12px;gap:12px}
+ .summary{padding:15px}
+ .summary h2{font-size:19px;margin-bottom:13px}
+ .ring{width:106px;height:106px}
+ .ring span{font-size:24px}
+ .legend{font-size:12px}
+ .daily-count{padding:11px;font-size:13px}
+ .matik{padding:19px 14px;border-radius:21px}
+ .matik h2{font-size:21px}
+ .matik-number{width:126px;height:126px;font-size:42px}
+ .matik-actions button{padding:11px 7px;font-size:12px}
+ .progress-footer{padding:13px;border-radius:13px;gap:9px}
+ .progress-footer strong{font-size:17px}
+ .mobile-nav{padding-top:6px;padding-bottom:calc(6px + env(safe-area-inset-bottom))}
+}
+@media(max-width:360px){
+ .counter{grid-template-columns:minmax(64px,1fr) repeat(3,minmax(34px,.5fr));gap:4px}
+ .counter .btn{font-size:10px;padding:8px 2px}
+ .today-pill{font-size:8px;padding:7px}
+ .ztext{font-size:13px}
+}
 </style></head>
 <body>
 <div id="appSplash" aria-label="Günlük Zikir Takip açılıyor">
