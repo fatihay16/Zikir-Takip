@@ -1,0 +1,23 @@
+{
+  "appId": "com.fatihay16.zikirtakip",
+  "appName": "Günlük Zikir Takip",
+  "webDir": "www",
+  "backgroundColor": "#103b2b",
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": false,
+    "webContentsDebuggingEnabled": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 1200,
+      "backgroundColor": "#103b2b",
+      "showSpinner": false,
+      "androidScaleType": "CENTER_CROP"
+    },
+    "StatusBar": {
+      "backgroundColor": "#103b2b",
+      "style": "LIGHT"
+    }
+  }
+}
