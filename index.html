@@ -317,10 +317,16 @@ function itemRow(item,group,i){
  if(group==='dua'){
   return `<div class="zikr"><div class="ztext">Dua<small>Okuduktan sonra tamamlandı olarak işaretle</small></div><div class="counter"><button class="btn ${done?'done':'complete'}" onclick="toggleDone('${k}',${!done})">${done?'✓ Tamamlandı':'Tamamla'}</button></div></div>`;
  }
- return `<div class="zikr"><input class="check" type="checkbox" ${done?'checked':''} aria-label="Tamamlandı" onchange="toggleDone('${k}',this.checked)"><div class="ztext">${item[1]}<small>${item[0]} defa hedef</small></div><div class="counter"><span class="count" id="count-${k}">${Math.min(v,target)} / ${target}</span><button class="btn plus" onclick="add('${k}',1,${target})">+1</button><button class="btn plus" onclick="add('${k}',33,${target})">+33</button><button class="btn plus" onclick="add('${k}',99,${target})">+99</button><button class="btn reset" onclick="resetItem('${k}')">↻ Sıfırla</button><button class="btn ${done?'done':'complete'}" onclick="toggleDone('${k}',${!done})">${done?'✓ Tamamlandı':'Tamamla'}</button></div></div>`;
+ return `<div class="zikr"><input class="check" type="checkbox" ${done?'checked':''} aria-label="Tamamlandı" onchange="toggleDone('${k}',this.checked,${target})"><div class="ztext">${item[1]}<small>${item[0]} defa hedef</small></div><div class="counter"><span class="count" id="count-${k}">${Math.min(v,target)} / ${target}</span><button class="btn plus" onclick="add('${k}',1,${target})">+1</button><button class="btn plus" onclick="add('${k}',33,${target})">+33</button><button class="btn plus" onclick="add('${k}',99,${target})">+99</button><button class="btn reset" onclick="resetItem('${k}')">↻ Sıfırla</button><button class="btn ${done?'done':'complete'}" onclick="toggleDone('${k}',${!done},${target})">${done?'✓ Tamamlandı':'Tamamla'}</button></div></div>`;
 }
 function renderList(id,arr,group){document.getElementById(id).innerHTML=arr.map((x,i)=>itemRow(x,group,i)).join('')}
-function toggleDone(k,v){state[k]=state[k]||{count:0};state[k].done=v;save();render()}
+function toggleDone(k,v,target){
+ state[k]=state[k]||{count:0,done:false};
+ state[k].done=v;
+ // Tamamlandı işaretlenen zikir, hedef sayısı kadar çekilmiş kabul edilir.
+ if(Number.isFinite(Number(target)) && Number(target)>0) state[k].count=v?Number(target):0;
+ save();render();
+}
 function add(k,n,target){state[k]=state[k]||{count:0,done:false};state[k].count=Math.min(target,(state[k].count||0)+n);if(state[k].count>=target)state[k].done=true;save();render()}
 function resetItem(k){state[k]={count:0,done:false};save();render();flashMessage('Zikir sayacı sıfırlandı') }
 function addGeneral(n){state.general=(state.general||0)+n;save();document.getElementById('matikNumber').textContent=state.general}
@@ -359,6 +365,23 @@ function summarizeDate(date){
 }
 function datesWithRecords(){
  return [...new Set(Object.keys(state).filter(k=>/^\d{4}-\d{2}-\d{2}_/.test(k)).map(dateFromKey))].sort().reverse();
+}
+// Eski kayıtlarda tamamlandı işaretlenmiş fakat hedef sayısı sayaca yazılmamış zikirleri düzelt.
+function normalizeCompletedZikirCounts(){
+ let changed=false;
+ const dates=[...new Set(Object.keys(state).filter(k=>/^\\d{4}-\\d{2}-\\d{2}_/.test(k)).map(dateFromKey))];
+ dates.forEach(date=>{
+  const data=dayData(date);
+  ['week','evrad','hibe'].forEach(group=>{
+   (data[group]||[]).forEach((item,i)=>{
+    const key=date+'_'+group+'_'+i,rec=state[key],target=Number(item[0]);
+    if(rec?.done && target>0 && Number(rec.count)!==target){
+     rec.count=target;changed=true;
+    }
+   });
+  });
+ });
+ if(changed)save();
 }
 function renderHistory(){
  const host=document.getElementById('historyList'),dates=datesWithRecords().filter(d=>d!==dateKey());
@@ -423,6 +446,7 @@ function toggleTheme(){
 }
 try{applyTheme(localStorage.getItem('zikirTheme')==='dark'?'dark':'light')}catch(e){applyTheme('light')}
 
+normalizeCompletedZikirCounts();
 render();
 </script>
 <script>
