@@ -81,6 +81,7 @@ main{max-width:1680px;padding:25px 30px 40px}
 @media(max-width:700px){.stats-grid{gap:8px}.stat-card{padding:13px}.stat-card strong{font-size:22px}.history-row{padding:12px 5px}.weekbar{grid-template-columns:65px 1fr 45px;gap:7px}}
 </style>
 
+<style>.stats-heading{font-family:Georgia,serif;font-weight:normal;color:#174b35;margin:25px 0 12px}.section-stat{padding:15px 0;border-bottom:1px solid #eee6d7}.section-stat h4{margin:0 0 11px;color:#28563c;font-size:15px}.section-progress{display:flex;align-items:center;gap:12px;margin-top:10px}.section-progress .weekbar-track{flex:1}.section-progress b{font-size:12px;color:#80632e;min-width:35px}.weekbar-detail{grid-template-columns:115px 1fr 45px;align-items:center}.weekbar-detail small{display:block;color:#8b806b;font-size:10px;margin-top:3px}@media(max-width:700px){.weekbar-detail{grid-template-columns:95px 1fr 40px}}</style>
 </head>
 <body>
 <div class="app">
@@ -130,12 +131,14 @@ main{max-width:1680px;padding:25px 30px 40px}
       <div class="panel-title">▥　Zikir İstatistikleri</div>
       <div class="group" style="padding-top:18px">
         <div class="stats-grid">
-          <div class="stat-card"><small>Toplam çekilen zikir</small><strong id="statTotalCount">0</strong></div>
-          <div class="stat-card"><small>Tamamlanan zikir</small><strong id="statCompleted">0</strong></div>
+          <div class="stat-card"><small>Üç bölümde toplam çekilen</small><strong id="statTotalCount">0</strong></div>
+          <div class="stat-card"><small>Tamamlanan hedef</small><strong id="statCompleted">0</strong></div>
           <div class="stat-card"><small>Kayıt bulunan gün</small><strong id="statDays">0</strong></div>
           <div class="stat-card"><small>Genel zikirmatik</small><strong id="statGeneral">0</strong></div>
         </div>
-        <h3 style="font-family:Georgia,serif;font-weight:normal;color:#174b35;margin:25px 0 12px">Son 7 Gün</h3>
+        <h3 class="stats-heading">Bölümlere Göre İstatistikler</h3>
+        <div id="sectionStats"></div>
+        <h3 class="stats-heading">Son 7 Gün – Bölüm Bazlı İlerleme</h3>
         <div id="weeklyStats"></div>
       </div>
     </div>
@@ -228,15 +231,37 @@ function renderHistory(){
  host.innerHTML=dates.map(d=>{const x=summarizeDate(d),label=new Date(d+'T12:00:00').toLocaleDateString('tr-TR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});return `<div class="history-row"><div><strong>${label}</strong><small>${x.count.toLocaleString('tr-TR')} zikir sayımı • ${x.done}/${x.total} zikir tamamlandı</small></div><span class="history-badge">${x.pct}%</span></div>`}).join('');
 }
 function renderStats(){
- let totalCount=Number(state.general)||0,completed=0;const dates=datesWithRecords();
- dates.forEach(d=>{const x=summarizeDate(d);completed+=x.done;Object.keys(state).forEach(k=>{if(k.startsWith(d+'_'))totalCount+=Number(state[k]?.count)||0})});
+ const dates=datesWithRecords();let totalCount=0,completed=0;
+ const groups=[{key:'week',title:'Manevi Güçler İçin Zikirler'},{key:'evrad',title:'Günlük Evradı Şerif'},{key:'hibe',title:'Günlük Hibe Edilenler'}];
+ const totals={week:{count:0,done:0,target:0},evrad:{count:0,done:0,target:0},hibe:{count:0,done:0,target:0}};
+ dates.forEach(date=>{
+  const data=dayData(date);
+  groups.forEach(g=>data[g.key].forEach((item,i)=>{
+   const rec=state[date+'_'+g.key+'_'+i]||{},x=totals[g.key];
+   x.count+=Number(rec.count)||0;x.target++;if(rec.done)x.done++;
+  }));
+ });
+ groups.forEach(g=>{totalCount+=totals[g.key].count;completed+=totals[g.key].done});
  document.getElementById('statTotalCount').textContent=totalCount.toLocaleString('tr-TR');
  document.getElementById('statCompleted').textContent=completed.toLocaleString('tr-TR');
  document.getElementById('statDays').textContent=dates.length.toLocaleString('tr-TR');
  document.getElementById('statGeneral').textContent=(Number(state.general)||0).toLocaleString('tr-TR');
- const today=new Date();let rows=[];
- for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(today.getDate()-i);const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');const x=summarizeDate(k);rows.push({label:d.toLocaleDateString('tr-TR',{weekday:'short'}),pct:x.pct,done:x.done,total:x.total})}
- document.getElementById('weeklyStats').innerHTML=rows.map(x=>`<div class="weekbar"><span>${x.label}</span><div class="weekbar-track"><span style="width:${x.pct}%"></span></div><b>${x.pct}%</b></div>`).join('');
+ document.getElementById('sectionStats').innerHTML=groups.map(g=>{
+  const x=totals[g.key],pct=x.target?Math.round(x.done/x.target*100):0;
+  return `<div class="section-stat"><h4>${g.title}</h4><div class="stats-grid"><div class="stat-card"><small>Toplam çekilen</small><strong>${x.count.toLocaleString('tr-TR')}</strong></div><div class="stat-card"><small>Tamamlanan hedef</small><strong>${x.done} / ${x.target}</strong></div></div><div class="section-progress"><div class="weekbar-track"><span style="width:${pct}%"></span></div><b>%${pct}</b></div></div>`;
+ }).join('');
+ const today=new Date(),weekRows=[];
+ for(let i=6;i>=0;i--){
+  const d=new Date(today);d.setDate(today.getDate()-i);
+  const k=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  const data=dayData(k);
+  groups.forEach(g=>{
+   let count=0,done=0,target=data[g.key].length;
+   data[g.key].forEach((_,j)=>{const rec=state[k+'_'+g.key+'_'+j]||{};count+=Number(rec.count)||0;if(rec.done)done++});
+   weekRows.push({label:d.toLocaleDateString('tr-TR',{weekday:'short'}),group:g.title,count,done,target,pct:target?Math.round(done/target*100):0});
+  });
+ }
+ document.getElementById('weeklyStats').innerHTML=weekRows.map(x=>`<div class="weekbar weekbar-detail"><span>${x.label}<small>${x.group}</small></span><div class="weekbar-track"><span style="width:${x.pct}%"></span></div><b>${x.done}/${x.target}</b></div>`).join('');
 }
 function exportBackup(){
  const blob=new Blob([JSON.stringify({version:1,exportedAt:new Date().toISOString(),state},null,2)],{type:'application/json'});
