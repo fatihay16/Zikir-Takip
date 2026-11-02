@@ -176,6 +176,9 @@ function save(){localStorage.setItem('zikirTakipState',JSON.stringify(state))}
 function keyFor(group,i){return dateKey()+'_'+group+'_'+i}
 function itemRow(item,group,i){
  const k=keyFor(group,i),target=Number(item[0]),v=state[k]?.count||0,done=!!state[k]?.done;
+ if(group==='dua'){
+  return `<div class="zikr"><div class="ztext">Dua<small>Okuduktan sonra tamamlandı olarak işaretle</small></div><div class="counter"><button class="btn ${done?'done':'complete'}" onclick="toggleDone('${k}',${!done})">${done?'✓ Tamamlandı':'Tamamla'}</button></div></div>`;
+ }
  return `<div class="zikr"><input class="check" type="checkbox" ${done?'checked':''} aria-label="Tamamlandı" onchange="toggleDone('${k}',this.checked)"><div class="ztext">${item[1]}<small>${item[0]} defa hedef</small></div><div class="counter"><span class="count" id="count-${k}">${Math.min(v,target)} / ${target}</span><button class="btn plus" onclick="add('${k}',1,${target})">+1</button><button class="btn plus" onclick="add('${k}',33,${target})">+33</button><button class="btn plus" onclick="add('${k}',99,${target})">+99</button><button class="btn reset" onclick="resetItem('${k}')">↻ Sıfırla</button><button class="btn ${done?'done':'complete'}" onclick="toggleDone('${k}',${!done})">${done?'✓ Tamamlandı':'Tamamla'}</button></div></div>`;
 }
 function renderList(id,arr,group){document.getElementById(id).innerHTML=arr.map((x,i)=>itemRow(x,group,i)).join('')}
