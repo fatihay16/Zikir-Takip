@@ -171,7 +171,45 @@ main{max-width:1680px;padding:25px 30px 40px}
  .today-pill{font-size:8px;padding:7px}
  .ztext{font-size:13px}
 }
-</style></head>
+</style>
+<style>
+/* Optional dark appearance; user data and the default light design remain untouched */
+html[data-theme="dark"]{color-scheme:dark}
+html[data-theme="dark"] body{background:radial-gradient(ellipse at 50% 0%,#1d3028 0,#111d18 55%,#0b1511 100%);color:#e7eee8}
+html[data-theme="dark"] .topbar{background:rgba(31,48,39,.94);border-color:#405747;color:#e7eee8}
+html[data-theme="dark"] .dateicon{background:#294638;color:#e7d29b}
+html[data-theme="dark"] .datebox small,html[data-theme="dark"] .dateicon{color:#d6bd7b}
+html[data-theme="dark"] .today-pill{background:#304a38;border-color:#52694e;color:#e2e9d9}
+html[data-theme="dark"] .panel{background:#1b2a22;border-color:#3b5042;box-shadow:0 12px 34px #0003}
+html[data-theme="dark"] .panel-title{background:linear-gradient(180deg,#23382c,#1b2a22);color:#e7d29b;border-color:#405345}
+html[data-theme="dark"] .zikr{border-color:#35483b}
+html[data-theme="dark"] .zikr:hover{background:#22372a}
+html[data-theme="dark"] .ztext{color:#e5ece5}
+html[data-theme="dark"] .ztext small{color:#d1b36e}
+html[data-theme="dark"] .count{background:#2c4033;border-color:#49604d;color:#e4eddf}
+html[data-theme="dark"] .btn{background:#2a4033;border-color:#526752;color:#e5ecdf}
+html[data-theme="dark"] .btn.plus{background:#286b49;border-color:#43865d;color:#fff}
+html[data-theme="dark"] .btn.complete{background:#b78b38;border-color:#d0a64e;color:#17291e}
+html[data-theme="dark"] .btn.done{background:#315b40;border-color:#527b5b;color:#e4f1e4}
+html[data-theme="dark"] .btn.reset{background:#2b3b30;border-color:#59634a;color:#e4d2a6}
+html[data-theme="dark"] .summary h2,html[data-theme="dark"] .legend,html[data-theme="dark"] .legend b{color:#e4ece4}
+html[data-theme="dark"] .ring:before{background:#1b2a22}
+html[data-theme="dark"] .ring span{color:#e7d29b}
+html[data-theme="dark"] .daily-count{background:#3b3524;border-color:#76623a;color:#ead8a8}
+html[data-theme="dark"] .progress-footer{background:#26382d;border-color:#435747}
+html[data-theme="dark"] .progress-footer strong{color:#e7d29b}
+html[data-theme="dark"] .bar,.weekbar-track{background:#405044}
+html[data-theme="dark"] .stat-card{background:linear-gradient(145deg,#2a3d30,#223329);border-color:#465b49}
+html[data-theme="dark"] .stat-card small,html[data-theme="dark"] .history-row small,html[data-theme="dark"] .weekbar-detail small{color:#b5c2b3}
+html[data-theme="dark"] .stat-card strong,html[data-theme="dark"] .history-row strong,html[data-theme="dark"] .stats-heading,html[data-theme="dark"] .section-stat h4{color:#e3d09a}
+html[data-theme="dark"] .history-row,html[data-theme="dark"] .section-stat{border-color:#3b5042}
+html[data-theme="dark"] .history-badge{background:#31513a;color:#e0eddd}
+html[data-theme="dark"] .empty-state{color:#b8c4b7}
+html[data-theme="dark"] #page-settings p{color:#bdc9bd!important}
+html[data-theme="dark"] .divider{background:#485a49}
+html[data-theme="dark"] .mobile-nav{background:rgba(8,29,20,.98);border-color:#8b713b}
+</style>
+</head>
 <body>
 <div id="appSplash" aria-label="Günlük Zikir Takip açılıyor">
  <div class="splash-mark"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M43.5 7.5A25.5 25.5 0 1 0 56 45.2 22.6 22.6 0 0 1 43.5 7.5Z" fill="currentColor"/><path d="M12 55h40" stroke="#d9ad4b" stroke-width="2.4" stroke-linecap="round"/></svg></div>
@@ -240,6 +278,10 @@ main{max-width:1680px;padding:25px 30px 40px}
     <div class="panel">
       <div class="panel-title">⚙　Ayarlar</div>
       <div class="group" style="padding:18px">
+        <h3 style="font-weight:normal;margin:0 0 8px">Görünüm</h3>
+        <p style="color:#7d806f;line-height:1.6">Uygulamanın açık veya koyu görünümünü buradan değiştirebilirsin.</p>
+        <button id="themeToggle" class="btn reset" onclick="toggleTheme()">🌙　Koyu temayı aç</button>
+        <div class="divider"></div>
         <h3 style="font-weight:normal;margin:0 0 8px">Kayıtların</h3>
         <p style="color:#7d806f;line-height:1.6">Sayaçların ve tamamlanma işaretlerin bu cihazın tarayıcısında saklanır. Tarayıcı verilerini temizlersen kayıtlar silinebilir.</p>
         <button class="btn reset" onclick="exportBackup()">⬇　Yedeği indir</button>
@@ -365,6 +407,22 @@ function restoreBackup(event){
  reader.onload=()=>{try{const parsed=JSON.parse(reader.result);const restored=parsed.state||parsed;if(!restored||typeof restored!=='object'||Array.isArray(restored))throw new Error('invalid');state=restored;save();render();flashMessage('Yedek başarıyla yüklendi')}catch(e){alert('Yedek dosyası okunamadı.')}event.target.value=''};
  reader.readAsText(file);
 }
+
+function applyTheme(theme){
+ const dark=theme==='dark';
+ document.documentElement.dataset.theme=dark?'dark':'light';
+ const meta=document.querySelector('meta[name="theme-color"]');
+ if(meta)meta.content=dark?'#17291f':'#103b2b';
+ const button=document.getElementById('themeToggle');
+ if(button)button.textContent=dark?'☀️　Açık temayı aç':'🌙　Koyu temayı aç';
+}
+function toggleTheme(){
+ const next=document.documentElement.dataset.theme==='dark'?'light':'dark';
+ try{localStorage.setItem('zikirTheme',next)}catch(e){}
+ applyTheme(next);
+}
+try{applyTheme(localStorage.getItem('zikirTheme')==='dark'?'dark':'light')}catch(e){applyTheme('light')}
+
 render();
 </script>
 <script>
