@@ -89,6 +89,18 @@ main{max-width:1680px;padding:25px 30px 40px}
 </style>
 
 <style>.stats-heading{font-family:Georgia,serif;font-weight:normal;color:#174b35;margin:25px 0 12px}.section-stat{padding:15px 0;border-bottom:1px solid #eee6d7}.section-stat h4{margin:0 0 11px;color:#28563c;font-size:15px}.section-progress{display:flex;align-items:center;gap:12px;margin-top:10px}.section-progress .weekbar-track{flex:1}.section-progress b{font-size:12px;color:#80632e;min-width:35px}.weekbar-detail{grid-template-columns:115px 1fr 45px;align-items:center}.weekbar-detail small{display:block;color:#8b806b;font-size:10px;margin-top:3px}@media(max-width:700px){.weekbar-detail{grid-template-columns:95px 1fr 40px}}</style>
+<style>
+/* Native Android WebView icon polish */
+.mobile-nav{align-items:center;min-height:68px;padding-left:5px;padding-right:5px}
+.mobile-nav button{flex:1;min-width:0;display:grid;justify-items:center;align-content:center;gap:5px;padding:2px 0;font-size:10px}
+.mobile-nav button svg{display:block;width:23px;height:23px;fill:none;stroke:#f1d58e;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.mobile-nav button span{font-size:9.5px;line-height:1.2;white-space:nowrap}
+.dateicon svg{width:22px;height:22px;fill:none;stroke:#24583d;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.title-mark{color:#bd9137;font-size:.8em;vertical-align:2px}
+.head-icon{display:inline-flex;width:26px;height:26px;border-radius:9px;background:#ffffff20;align-items:center;justify-content:center;margin-right:6px;vertical-align:middle;color:#f6dfaa;font-size:20px}
+.matik-symbol{color:#e7c879;font-size:.9em}
+@media(max-width:700px){.mobile-nav button svg{width:22px;height:22px}.mobile-nav button span{font-size:9px}}
+</style>
 </head>
 <body>
 <div class="app">
@@ -99,18 +111,18 @@ main{max-width:1680px;padding:25px 30px 40px}
 </aside>
 <main>
   <header class="topbar">
-    <div class="datebox"><div class="dateicon">▦</div><div><strong id="todayDate"></strong><small id="hijriHint">Günlük zikir listen hazır</small></div></div>
+    <div class="datebox"><div class="dateicon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M7 3v4m10-4v4M3 10h18"/></svg></div><div><strong id="todayDate"></strong><small id="hijriHint">Günlük zikir listen hazır</small></div></div>
     <div class="today-pill">✦　Bugünün zikirleri hazır</div>
   </header>
   <div id="page-home">
   <div class="layout">
     <section id="zikirs">
       <div class="panel">
-        <div class="panel-title">✧　Bugünün Zikirleri　✧</div>
-        <div class="group"><div class="group-head">⭐　Manevi Güçler İçin Zikirler</div><div id="weekdayList"></div></div>
-        <div class="group"><div class="group-head">📖　Günlük Evradı Şerif</div><div id="evradList"></div></div>
-        <div class="group"><div class="group-head gold">☾　Günlük Hibe Edilenler</div><div id="hibeList"></div></div>
-        <div class="group"><div class="group-head teal">🤲　Dua</div><div class="dua">
+        <div class="panel-title"><span class="title-mark">✦</span> Bugünün Zikirleri <span class="title-mark">✦</span></div>
+        <div class="group"><div class="group-head"><span class="head-icon">✧</span> Manevi Güçler İçin Zikirler</div><div id="weekdayList"></div></div>
+        <div class="group"><div class="group-head"><span class="head-icon">▤</span> Günlük Evradı Şerif</div><div id="evradList"></div></div>
+        <div class="group"><div class="group-head gold"><span class="head-icon">☾</span> Günlük Hibe Edilenler</div><div id="hibeList"></div></div>
+        <div class="group"><div class="group-head teal"><span class="head-icon">♡</span> Dua</div><div class="dua">
           <p>Ey Allah’ım! Okuduğum Evradı Şerifeyi, Efendimiz Hz. Muhammed Mustafa Sallallahu Aleyhi Vesellem’in mübarek ruhu şeriflerine, aline, ehli beytine, ezvacına, ashabına ve bütün peygamberlerin ruhlarına, Sultanu’l-Evliya Gavsu’l-Azam Seyyid Abdülkadir Geylani’nin ve bu yolda hizmet etmiş olan bütün Kadiri büyüklerimizin ruhlarına ve bütün tarikatların büyüklerinin ruhlarına, mürşidimiz Şeyh Muhammed Ruhi Kadiriyyü’l-Hüseyni’nin ruhaniyetine ve ölmüşlerimizin ruhlarına hediye eyledim.</p>
           <p>Ya Rabbi, beni bu saydığım zatların himmetinden ve bereketinden mahrum eyleme. Amin.</p>
           <small>Bu duayı okuduktan sonra tamamlandı olarak işaretleyebilirsin.</small>
@@ -120,7 +132,7 @@ main{max-width:1680px;padding:25px 30px 40px}
     </section>
     <aside class="sidecol">
       <div class="panel summary"><h2>Bugünün Genel Durumu</h2><div class="ring-wrap"><div class="ring" id="ring"><span id="percent">0%</span></div><div class="legend"><div>🟢 Tamamlanan: <b id="completed">0</b></div><div>🟡 Toplam: <b id="total">0</b></div><div>🔴 Kalan: <b id="remaining">0</b></div></div></div><div class="divider"></div><div class="daily-count">“Zikir eden kalp,<br>hiçbir zaman yalnız değildir.”</div></div>
-      <div class="matik" id="matik"><h2>◈　Zikirmatik　◈</h2><div class="matik-number" id="matikNumber" role="button" tabindex="0" aria-label="Sayacı bir artır" onclick="addGeneral(1)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();addGeneral(1)}">0</div><div class="matik-actions"><button onclick="addGeneral(33)">+33</button><button onclick="addGeneral(99)">+99</button><button class="wide" onclick="resetGeneral()">↻　Sıfırla</button></div><div style="margin-top:12px;font-size:12px;color:#e9d6a5">Bağımsız genel sayaç</div></div>
+      <div class="matik" id="matik"><h2><span class="matik-symbol">◎</span> Zikirmatik <span class="matik-symbol">◎</span></h2><div class="matik-number" id="matikNumber" role="button" tabindex="0" aria-label="Sayacı bir artır" onclick="addGeneral(1)" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();addGeneral(1)}">0</div><div class="matik-actions"><button onclick="addGeneral(33)">+33</button><button onclick="addGeneral(99)">+99</button><button class="wide" onclick="resetGeneral()">↻　Sıfırla</button></div><div style="margin-top:12px;font-size:12px;color:#e9d6a5">Bağımsız genel sayaç</div></div>
     </aside>
   </div>
   </div>
@@ -166,7 +178,7 @@ main{max-width:1680px;padding:25px 30px 40px}
   </section>
 </main>
 </div>
-<nav class="mobile-nav"><button onclick="showPage('home')">⌂<span>Ana Sayfa</span></button><button onclick="showPage('history')">◷<span>Geçmiş</span></button><button onclick="showPage('home');setTimeout(()=>document.getElementById('matik').scrollIntoView({behavior:'smooth'}),50)">◉<span>Zikirmatik</span></button><button onclick="showPage('stats')">▥<span>İstatistik</span></button><button onclick="showPage('settings')">⚙<span>Ayarlar</span></button></nav>
+<nav class="mobile-nav"><button onclick="showPage('home')"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H14v-7h-4v7H3z"/></svg><span>Ana Sayfa</span></button><button onclick="showPage('history')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Geçmiş</span></button><button onclick="showPage('home');setTimeout(()=>document.getElementById('matik').scrollIntoView({behavior:'smooth'}),50)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg><span>Zikirmatik</span></button><button onclick="showPage('stats')"><svg viewBox="0 0 24 24"><path d="M4 19V9m8 10V4m8 15v-7"/></svg><span>İstatistik</span></button><button onclick="showPage('settings')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 13a7 7 0 0 0 0-2l2-1.5-2-3.5-2.3.8a7 7 0 0 0-1.7-1L14.5 3h-5L9 5.8a7 7 0 0 0-1.7 1L5 6l-2 3.5L5 11a7 7 0 0 0 0 2l-2 1.5L5 18l2.3-.8a7 7 0 0 0 1.7 1l.5 2.8h5l.5-2.8a7 7 0 0 0 1.7-1L19 18l2-3.5z"/></svg><span>Ayarlar</span></button></nav>
 <script>
 const days=[
 [['300','Yâ Hafîz'],['1000','Lâ havle velâ kuvvete illâ billâhi’l-Aliyyi’l-Azîm'],['1000','Yâ Seriyy, Yâ Karîb']],
