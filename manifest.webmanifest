@@ -1,0 +1,27 @@
+{
+  "name": "Günlük Zikir Takip",
+  "short_name": "Zikir Takip",
+  "description": "Günlük zikirlerini takip et, hedeflerini tamamla ve manevi ilerlemeni kaydet.",
+  "lang": "tr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#103b2b",
+  "theme_color": "#103b2b",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
