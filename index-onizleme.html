@@ -285,6 +285,49 @@ html[data-theme="dark"] .mobile-nav{background:rgba(8,29,20,.98);border-color:#8
 }
 </style>
 
+
+<style>
+/* Genel zikirmatik: geniş ve basık görünüm yerine daha dikey kart */
+@media(max-width:700px){
+ .sidecol>.matik{
+  width:min(100%,390px)!important;
+  justify-self:center!important;
+  min-height:390px!important;
+  box-sizing:border-box!important;
+  padding:28px 22px 25px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+ }
+ .sidecol>.matik h2{font-size:22px!important;margin:5px 0 22px!important}
+ .sidecol>.matik .matik-number{
+  width:154px!important;height:154px!important;
+  flex:0 0 154px!important;
+  font-size:52px!important;
+  margin:0 auto 24px!important;
+ }
+ .sidecol>.matik .matik-actions{
+  width:100%!important;
+  max-width:310px!important;
+  margin:0 auto!important;
+  gap:12px!important;
+ }
+ .sidecol>.matik .matik-actions button{
+  min-height:49px!important;
+  padding:13px 10px!important;
+  font-size:17px!important;
+  border-radius:13px!important;
+ }
+ .sidecol>.matik .matik-actions .wide{min-height:44px!important;font-size:15px!important}
+ .sidecol>.matik>div:last-child{margin-top:18px!important;font-size:12px!important}
+}
+@media(max-width:380px){
+ .sidecol>.matik{min-height:370px!important;padding:25px 17px 22px!important}
+ .sidecol>.matik .matik-number{width:142px!important;height:142px!important;flex-basis:142px!important}
+}
+</style>
+
 </head>
 <body>
 <div id="appSplash" aria-label="Günlük Zikir Takip açılıyor">
