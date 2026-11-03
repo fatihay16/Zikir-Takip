@@ -250,6 +250,17 @@ html[data-theme="dark"] .mobile-nav{background:rgba(8,29,20,.98);border-color:#8
 .zm-count:active{transform:scale(.985)}
 </style>
 
+
+<style>
+/* Telefonda genel durum ve genel zikirmatik alt alta, tam genişlik */
+@media(max-width:700px){
+ .sidecol{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:14px!important;width:100%;margin-top:16px}
+ .sidecol>.panel,.sidecol>.matik{width:100%;min-width:0;margin:0;min-height:0}
+ .summary{padding:18px 16px}
+ .matik{padding:24px 18px}
+}
+</style>
+
 </head>
 <body>
 <div id="appSplash" aria-label="Günlük Zikir Takip açılıyor">
