@@ -328,6 +328,17 @@ html[data-theme="dark"] .mobile-nav{background:rgba(8,29,20,.98);border-color:#8
 }
 </style>
 
+<style>
+.zm-confirm-overlay{display:none;position:fixed;inset:0;z-index:1100;background:rgba(5,20,14,.78);backdrop-filter:blur(5px);align-items:center;justify-content:center;padding:22px}
+.zm-confirm-overlay.show{display:flex}
+.zm-confirm-box{width:min(100%,340px);box-sizing:border-box;padding:25px 21px 19px;text-align:center;border-radius:22px;background:linear-gradient(155deg,#174b35,#09291e);border:1px solid #d9b65e;color:#fff8e8;box-shadow:0 20px 55px #0007}
+.zm-confirm-box h3{font:normal 21px Georgia,serif;color:#f5d98f;margin:0 0 12px}
+.zm-confirm-box p{font-size:14px;line-height:1.55;margin:0 0 21px}
+.zm-confirm-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.zm-confirm-actions button{border-radius:12px;padding:12px 8px;font-weight:700;font-size:14px}
+.zm-confirm-cancel{background:#ffffff12;border:1px solid #ffffff55;color:#fff5dc}
+.zm-confirm-yes{background:linear-gradient(145deg,#f8dfa0,#c99b3d);border:1px solid #e6c66f;color:#173b2a}
+</style>
 </head>
 <body>
 <div id="appSplash" aria-label="Günlük Zikir Takip açılıyor">
@@ -491,8 +502,14 @@ function addZikirmatik(amount){
 }
 function resetZikirmatik(){
  if(!activeZikirmatikKey)return;
- if(!confirm(activeZikirmatikName+' için zikirmatik sayacı sıfırlansın mı?'))return;
+ document.getElementById('zmResetMessage').textContent=activeZikirmatikName+' zikrinin sayacı sıfırlanacak. Emin misin?';
+ document.getElementById('zmResetConfirm').classList.add('show');
+}
+function closeZikirmatikResetConfirm(){document.getElementById('zmResetConfirm').classList.remove('show')}
+function confirmZikirmatikReset(){
+ if(!activeZikirmatikKey)return;
  state[activeZikirmatikKey]={count:0,done:false};save();render();renderZikirmatik();
+ closeZikirmatikResetConfirm();
  flashMessage('Yalnızca '+activeZikirmatikName+' sayacı sıfırlandı');
 }
 function closeZikirmatik(){document.getElementById('zikirmatikModal').classList.remove('show')}
@@ -611,4 +628,5 @@ render();
 <script>
 if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(err => console.warn("Çevrimdışı destek etkinleştirilemedi:", err))); }
 </script>
-<script>window.addEventListener('load',()=>{const s=document.getElementById('appSplash');if(s)setTimeout(()=>s.classList.add('hide'),950)});</script></body></html>
+<script>window.addEventListener('load',()=>{const s=document.getElementById('appSplash');if(s)setTimeout(()=>s.classList.add('hide'),950)});</script><div class="zm-confirm-overlay" id="zmResetConfirm" role="dialog" aria-modal="true" aria-labelledby="zmResetTitle"><div class="zm-confirm-box"><h3 id="zmResetTitle">Sayacı sıfırlayalım mı?</h3><p id="zmResetMessage">Bu zikrin sayacı sıfırlanacak.</p><div class="zm-confirm-actions"><button type="button" class="zm-confirm-cancel" onclick="closeZikirmatikResetConfirm()">Vazgeç</button><button type="button" class="zm-confirm-yes" onclick="confirmZikirmatikReset()">Evet, sıfırla</button></div></div></div>
+</body></html>
