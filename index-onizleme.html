@@ -261,6 +261,30 @@ html[data-theme="dark"] .mobile-nav{background:rgba(8,29,20,.98);border-color:#8
 }
 </style>
 
+
+<style>
+/* Genel zikirmatik kartını telefonda daha dengeli ve kompakt tut */
+@media(max-width:700px){
+ .sidecol>.matik{
+  padding:19px 16px 17px!important;
+  border-radius:20px!important;
+  outline:0!important;
+ }
+ .sidecol>.matik:before{inset:7px;border-radius:15px}
+ .sidecol>.matik h2{font-size:20px!important;margin:1px 0 13px!important}
+ .sidecol>.matik .matik-number{
+  width:116px!important;height:116px!important;
+  font-size:43px!important;margin:0 auto 15px!important;
+  border-width:4px!important;
+  box-shadow:0 0 0 5px #d8b45f18,inset 0 2px 10px #0001!important;
+ }
+ .sidecol>.matik .matik-actions{max-width:360px;margin:0 auto!important;gap:8px!important}
+ .sidecol>.matik .matik-actions button{padding:10px 8px!important;font-size:15px!important;border-radius:11px!important}
+ .sidecol>.matik .matik-actions .wide{font-size:13px!important}
+ .sidecol>.matik>div:last-child{margin-top:9px!important;font-size:11px!important}
+}
+</style>
+
 </head>
 <body>
 <div id="appSplash" aria-label="Günlük Zikir Takip açılıyor">
