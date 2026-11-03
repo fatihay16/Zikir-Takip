@@ -229,6 +229,27 @@ html[data-theme="dark"] .mobile-nav{background:rgba(8,29,20,.98);border-color:#8
 .zm-close{border:0;background:transparent;color:#e9d39e;padding:9px 18px}
 @media(max-width:480px){.zm-box{padding:24px 17px 20px}.zm-count{width:170px;height:170px}.zm-count-number{font-size:47px}}
 </style>
+
+<style>
+/* Telefon: zikirmatik ve Tamamla butonlarını dengeli boyutlandır */
+@media(max-width:700px){
+ .counter{grid-template-columns:minmax(64px,.85fr) minmax(0,1.35fr) minmax(62px,.85fr)!important;gap:6px}
+ .counter .count{grid-column:1!important}
+ .counter .btn.plus{grid-column:2!important;min-height:42px;padding:9px 5px;font-size:12px}
+ .counter .btn.complete,.counter .btn.done{grid-column:3!important;min-height:34px;padding:6px 3px;font-size:10px;white-space:normal;line-height:1.15}
+}
+@media(max-width:360px){
+ .counter{grid-template-columns:minmax(58px,.8fr) minmax(0,1.3fr) minmax(58px,.8fr)!important;gap:4px}
+ .counter .btn.plus{font-size:11px}
+ .counter .btn.complete,.counter .btn.done{font-size:9px}
+}
+/* Android/Chrome dokunma sırasında görünen mavi parlamayı kaldır */
+*,*::before,*::after{-webkit-tap-highlight-color:transparent}
+.zm-count,.zm-add,.zm-reset,.zm-close{ -webkit-tap-highlight-color:transparent;outline:none;touch-action:manipulation; }
+.zm-count:focus,.zm-count:focus-visible,.zm-count:active{outline:none;background:linear-gradient(145deg,#fffdf5,#eee1bf);box-shadow:0 0 0 8px #d9b65e25,inset 0 3px 14px #0001}
+.zm-count:active{transform:scale(.985)}
+</style>
+
 </head>
 <body>
 <div id="appSplash" aria-label="Günlük Zikir Takip açılıyor">
