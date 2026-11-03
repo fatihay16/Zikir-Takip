@@ -35,6 +35,13 @@ jobs:
           distribution: temurin
           java-version: '21'
 
+      # Aynı debug imza anahtarını sonraki derlemelerde koru.
+      - name: Android debug imza anahtarını sakla
+        uses: actions/cache@v4
+        with:
+          path: ~/.android/debug.keystore
+          key: zikir-takip-android-debug-keystore-v1
+
       - name: Bağımlılıkları yükle
         run: npm install
 
