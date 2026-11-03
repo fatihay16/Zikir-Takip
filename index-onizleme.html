@@ -350,7 +350,7 @@ function itemRow(item,group,i){
  if(group==='dua'){
   return `<div class="zikr"><div class="ztext">Dua<small>Okuduktan sonra tamamlandı olarak işaretle</small></div><div class="counter"><button class="btn ${done?'done':'complete'}" onclick="toggleDone('${k}',${!done})">${done?'✓ Tamamlandı':'Tamamla'}</button></div></div>`;
  }
- return `<div class="zikr"><input class="check" type="checkbox" ${done?'checked':''} aria-label="Tamamlandı" onchange="toggleDone('${k}',this.checked,${target})"><div class="ztext">${item[1]}<small>${item[0]} defa hedef</small></div><div class="counter"><span class="count" id="count-${k}">${Math.min(v,target)} / ${target}</span><button class="btn plus" onclick="openZikirmatik('${k}',${target},${JSON.stringify(item[1])})">☾ Zikirmatiği Aç</button><button class="btn ${done?'done':'complete'}" onclick="toggleDone('${k}',${!done},${target})">${done?'✓ Tamamlandı':'Tamamla'}</button></div></div>`;
+ return `<div class="zikr"><input class="check" type="checkbox" ${done?'checked':''} aria-label="Tamamlandı" onchange="toggleDone('${k}',this.checked,${target})"><div class="ztext">${item[1]}<small>${item[0]} defa hedef</small></div><div class="counter"><span class="count" id="count-${k}">${Math.min(v,target)} / ${target}</span><button class="btn plus" onclick="openZikirmatik('${k}',${target},${JSON.stringify(item[1]).replace(/"/g,'&quot;')})">☾ Zikirmatiği Aç</button><button class="btn ${done?'done':'complete'}" onclick="toggleDone('${k}',${!done},${target})">${done?'✓ Tamamlandı':'Tamamla'}</button></div></div>`;
 }
 function renderList(id,arr,group){document.getElementById(id).innerHTML=arr.map((x,i)=>itemRow(x,group,i)).join('')}
 function toggleDone(k,v,target){
