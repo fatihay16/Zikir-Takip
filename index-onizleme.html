@@ -209,6 +209,26 @@ html[data-theme="dark"] #page-settings p{color:#bdc9bd!important}
 html[data-theme="dark"] .divider{background:#485a49}
 html[data-theme="dark"] .mobile-nav{background:rgba(8,29,20,.98);border-color:#8b713b}
 </style>
+
+<style>
+/* Zikir başına bağımsız zikirmatik penceresi */
+.zm-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(7,24,17,.78);backdrop-filter:blur(7px);align-items:center;justify-content:center;padding:18px}
+.zm-overlay.show{display:flex}
+.zm-box{width:min(100%,430px);background:linear-gradient(155deg,#174b35,#09291e);border:1px solid #d9b65e;border-radius:28px;padding:28px 22px 24px;text-align:center;color:#fff8e8;box-shadow:0 24px 70px #0008;position:relative}
+.zm-moon{font-size:32px;color:#f0d28b;margin-bottom:5px}
+.zm-box h2{font:normal 24px Georgia,serif;color:#f5d98f;margin:4px 0 12px}
+.zm-name{font-size:17px;line-height:1.5;color:#fff8e8;margin:0 auto 7px;overflow-wrap:anywhere}
+.zm-target{font-size:13px;color:#e4c77f;margin:0 0 20px}
+.zm-count{width:190px;height:190px;border-radius:50%;border:6px solid #d9b65e;background:linear-gradient(145deg,#fffdf5,#eee1bf);color:#123d2c;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 22px;box-shadow:0 0 0 8px #d9b65e25,inset 0 3px 14px #0001}
+.zm-count:active{transform:scale(.97)}
+.zm-count-number{font:bold 53px Arial,sans-serif;font-variant-numeric:tabular-nums}
+.zm-count-hint{font:12px Arial,sans-serif;color:#6d6a55;margin-top:5px}
+.zm-additions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:13px}
+.zm-add{border:1px solid #e6c66f;border-radius:13px;padding:13px 8px;background:linear-gradient(145deg,#f8dfa0,#c99b3d);color:#173b2a;font-weight:700;font-size:16px}
+.zm-reset{border:1px solid #ffffff55;border-radius:12px;padding:11px 15px;background:#ffffff12;color:#fff5dc;width:100%;margin-bottom:10px}
+.zm-close{border:0;background:transparent;color:#e9d39e;padding:9px 18px}
+@media(max-width:480px){.zm-box{padding:24px 17px 20px}.zm-count{width:170px;height:170px}.zm-count-number{font-size:47px}}
+</style>
 </head>
 <body>
 <div id="appSplash" aria-label="Günlük Zikir Takip açılıyor">
@@ -295,6 +315,19 @@ html[data-theme="dark"] .mobile-nav{background:rgba(8,29,20,.98);border-color:#8
 </main>
 </div>
 <nav class="mobile-nav"><button data-page="home" onclick="showPage('home')"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H14v-7h-4v7H3z"/></svg><span>Ana Sayfa</span></button><button data-page="history" onclick="showPage('history')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Geçmiş</span></button><button onclick="showPage('home');setTimeout(()=>document.getElementById('matik').scrollIntoView({behavior:'smooth'}),50)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg><span>Zikirmatik</span></button><button data-page="stats" onclick="showPage('stats')"><svg viewBox="0 0 24 24"><path d="M4 19V9m8 10V4m8 15v-7"/></svg><span>İstatistik</span></button><button data-page="settings" onclick="showPage('settings')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 13a7 7 0 0 0 0-2l2-1.5-2-3.5-2.3.8a7 7 0 0 0-1.7-1L14.5 3h-5L9 5.8a7 7 0 0 0-1.7 1L5 6l-2 3.5L5 11a7 7 0 0 0 0 2l-2 1.5L5 18l2.3-.8a7 7 0 0 0 1.7 1l.5 2.8h5l.5-2.8a7 7 0 0 0 1.7-1L19 18l2-3.5z"/></svg><span>Ayarlar</span></button></nav>
+
+<div class="zm-overlay" id="zikirmatikModal" role="dialog" aria-modal="true" aria-labelledby="zikirmatikTitle">
+ <div class="zm-box">
+  <div class="zm-moon">☾</div>
+  <h2 id="zikirmatikTitle">Zikirmatik</h2>
+  <p class="zm-name" id="zikirmatikCurrentName">Seçili zikir</p>
+  <p class="zm-target" id="zikirmatikTarget"></p>
+  <button type="button" class="zm-count" onclick="addZikirmatik(1)" aria-label="Sayacı bir artır"><span class="zm-count-number" id="zikirmatikCount">0</span><span class="zm-count-hint">Dokun • +1</span></button>
+  <div class="zm-additions"><button type="button" class="zm-add" onclick="addZikirmatik(33)">+33 Zikir</button><button type="button" class="zm-add" onclick="addZikirmatik(99)">+99 Zikir</button></div>
+  <button type="button" class="zm-reset" onclick="resetZikirmatik()">↻ Bu Sayacı Sıfırla</button>
+  <button type="button" class="zm-close" onclick="closeZikirmatik()">Kapat</button>
+ </div>
+</div>
 <script>
 const days=[
 [['300','Yâ Hafîz'],['1000','Lâ havle velâ kuvvete illâ billâhi’l-Aliyyi’l-Azîm'],['1000','Yâ Seriyy, Yâ Karîb']],
@@ -317,7 +350,7 @@ function itemRow(item,group,i){
  if(group==='dua'){
   return `<div class="zikr"><div class="ztext">Dua<small>Okuduktan sonra tamamlandı olarak işaretle</small></div><div class="counter"><button class="btn ${done?'done':'complete'}" onclick="toggleDone('${k}',${!done})">${done?'✓ Tamamlandı':'Tamamla'}</button></div></div>`;
  }
- return `<div class="zikr"><input class="check" type="checkbox" ${done?'checked':''} aria-label="Tamamlandı" onchange="toggleDone('${k}',this.checked,${target})"><div class="ztext">${item[1]}<small>${item[0]} defa hedef</small></div><div class="counter"><span class="count" id="count-${k}">${Math.min(v,target)} / ${target}</span><button class="btn plus" onclick="add('${k}',1,${target})">+1</button><button class="btn plus" onclick="add('${k}',33,${target})">+33</button><button class="btn plus" onclick="add('${k}',99,${target})">+99</button><button class="btn reset" onclick="resetItem('${k}')">↻ Sıfırla</button><button class="btn ${done?'done':'complete'}" onclick="toggleDone('${k}',${!done},${target})">${done?'✓ Tamamlandı':'Tamamla'}</button></div></div>`;
+ return `<div class="zikr"><input class="check" type="checkbox" ${done?'checked':''} aria-label="Tamamlandı" onchange="toggleDone('${k}',this.checked,${target})"><div class="ztext">${item[1]}<small>${item[0]} defa hedef</small></div><div class="counter"><span class="count" id="count-${k}">${Math.min(v,target)} / ${target}</span><button class="btn plus" onclick="openZikirmatik('${k}',${target},${JSON.stringify(item[1])})">☾ Zikirmatiği Aç</button><button class="btn ${done?'done':'complete'}" onclick="toggleDone('${k}',${!done},${target})">${done?'✓ Tamamlandı':'Tamamla'}</button></div></div>`;
 }
 function renderList(id,arr,group){document.getElementById(id).innerHTML=arr.map((x,i)=>itemRow(x,group,i)).join('')}
 function toggleDone(k,v,target){
@@ -339,6 +372,33 @@ function render(){
  groups.forEach((g)=>{let arr=g==='week'?days[weekIndex]:g==='evrad'?evrad:g==='hibe'?hibe:[['1','Dua']];arr.forEach((_,i)=>{if(state[keyFor(g,i)]?.done)completed++})});
  const pct=Math.round(completed/total*100);document.getElementById('completed').textContent=completed;document.getElementById('total').textContent=total;document.getElementById('remaining').textContent=total-completed;document.getElementById('percent').textContent=pct+'%';document.getElementById('ring').style.background=`conic-gradient(#287247 ${pct*3.6}deg,#e4dfd4 0deg)`;document.getElementById('progressText').textContent=completed+' / '+total+' tamamlandı';document.getElementById('progressBar').style.width=pct+'%';
 }
+
+let activeZikirmatikKey=null,activeZikirmatikTarget=0,activeZikirmatikName='';
+function openZikirmatik(key,target,name){
+ activeZikirmatikKey=key;activeZikirmatikTarget=Number(target)||0;activeZikirmatikName=name||'Zikir';
+ document.getElementById('zikirmatikCurrentName').textContent=activeZikirmatikName;
+ document.getElementById('zikirmatikTarget').textContent=activeZikirmatikTarget>0?'Hedef: '+activeZikirmatikTarget.toLocaleString('tr-TR')+' defa':'';
+ renderZikirmatik();
+ document.getElementById('zikirmatikModal').classList.add('show');
+}
+function renderZikirmatik(){
+ const rec=activeZikirmatikKey?state[activeZikirmatikKey]:null;
+ document.getElementById('zikirmatikCount').textContent=(Number(rec?.count)||0).toLocaleString('tr-TR');
+}
+function addZikirmatik(amount){
+ if(!activeZikirmatikKey)return;
+ add(activeZikirmatikKey,amount,activeZikirmatikTarget);
+ renderZikirmatik();
+}
+function resetZikirmatik(){
+ if(!activeZikirmatikKey)return;
+ if(!confirm(activeZikirmatikName+' için zikirmatik sayacı sıfırlansın mı?'))return;
+ state[activeZikirmatikKey]={count:0,done:false};save();render();renderZikirmatik();
+ flashMessage('Yalnızca '+activeZikirmatikName+' sayacı sıfırlandı');
+}
+function closeZikirmatik(){document.getElementById('zikirmatikModal').classList.remove('show')}
+document.getElementById('zikirmatikModal').addEventListener('click',function(e){if(e.target===this)closeZikirmatik()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeZikirmatik()});
 
 function flashMessage(message){
  let el=document.getElementById('toast');
