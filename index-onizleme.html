@@ -317,6 +317,17 @@ html[data-theme="dark"] .mobile-nav{background:rgba(8,29,20,.98);border-color:#8
 </main>
 </div>
 <nav class="mobile-nav"><button data-page="home" onclick="showPage('home')"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7v10H14v-7h-4v7H3z"/></svg><span>Ana Sayfa</span></button><button data-page="history" onclick="showPage('history')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg><span>Geçmiş</span></button><button onclick="showPage('home');setTimeout(()=>document.getElementById('matik').scrollIntoView({behavior:'smooth'}),50)"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg><span>Zikirmatik</span></button><button data-page="stats" onclick="showPage('stats')"><svg viewBox="0 0 24 24"><path d="M4 19V9m8 10V4m8 15v-7"/></svg><span>İstatistik</span></button><button data-page="settings" onclick="showPage('settings')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19 13a7 7 0 0 0 0-2l2-1.5-2-3.5-2.3.8a7 7 0 0 0-1.7-1L14.5 3h-5L9 5.8a7 7 0 0 0-1.7 1L5 6l-2 3.5L5 11a7 7 0 0 0 0 2l-2 1.5L5 18l2.3-.8a7 7 0 0 0 1.7 1l.5 2.8h5l.5-2.8a7 7 0 0 0 1.7-1L19 18l2-3.5z"/></svg><span>Ayarlar</span></button></nav>
+<div class="modal-overlay" id="zikirmatikModal" role="dialog" aria-modal="true" aria-labelledby="zikirmatikTitle">
+ <div class="modal-box zikirmatik-box">
+  <div class="modal-icon">☾</div><h2 id="zikirmatikTitle">Zikirmatik</h2>
+  <p class="zikirmatik-esma" id="zikirmatikCurrentName">Seçili zikir</p>
+  <button type="button" class="zikirmatik-count" onclick="addZikirmatik(1)" aria-label="Sayacı bir artır"><span class="zikirmatik-count-number" id="zikirmatikCount">0</span><span class="zikirmatik-count-hint">Dokun • +1</span></button>
+  <div class="zikirmatik-additions"><button type="button" class="zikirmatik-add" onclick="addZikirmatik(33)">+33 Zikir</button><button type="button" class="zikirmatik-add" onclick="addZikirmatik(99)">+99 Zikir</button></div>
+  <p class="zikirmatik-target" id="zikirmatikTarget"></p>
+  <button type="button" class="zikirmatik-reset" onclick="resetZikirmatik()">↺ Bu Sayacı Sıfırla</button>
+  <button type="button" class="modal-close" onclick="closeZikirmatik()">Kapat</button>
+ </div>
+</div
 <script>
 const days=[
 [['300','Yâ Hafîz'],['1000','Lâ havle velâ kuvvete illâ billâhi’l-Aliyyi’l-Azîm'],['1000','Yâ Seriyy, Yâ Karîb']],
@@ -501,15 +512,5 @@ render();
 if ("serviceWorker" in navigator) { window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(err => console.warn("Çevrimdışı destek etkinleştirilemedi:", err))); }
 </script>
 <script>window.addEventListener('load',()=>{const s=document.getElementById('appSplash');if(s)setTimeout(()=>s.classList.add('hide'),950)});</script>
-<div class="modal-overlay" id="zikirmatikModal" role="dialog" aria-modal="true" aria-labelledby="zikirmatikTitle">
- <div class="modal-box zikirmatik-box">
-  <div class="modal-icon">☾</div><h2 id="zikirmatikTitle">Zikirmatik</h2>
-  <p class="zikirmatik-esma" id="zikirmatikCurrentName">Seçili zikir</p>
-  <button type="button" class="zikirmatik-count" onclick="addZikirmatik(1)" aria-label="Sayacı bir artır"><span class="zikirmatik-count-number" id="zikirmatikCount">0</span><span class="zikirmatik-count-hint">Dokun • +1</span></button>
-  <div class="zikirmatik-additions"><button type="button" class="zikirmatik-add" onclick="addZikirmatik(33)">+33 Zikir</button><button type="button" class="zikirmatik-add" onclick="addZikirmatik(99)">+99 Zikir</button></div>
-  <p class="zikirmatik-target" id="zikirmatikTarget"></p>
-  <button type="button" class="zikirmatik-reset" onclick="resetZikirmatik()">↺ Bu Sayacı Sıfırla</button>
-  <button type="button" class="modal-close" onclick="closeZikirmatik()">Kapat</button>
- </div>
-</div>
+>
 </body></html>
