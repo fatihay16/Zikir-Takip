@@ -1,23 +1,47 @@
-const CACHE_NAME = "zikir-takip-v1";
+const CACHE_NAME = "zikir-takip-v2";
 const APP_FILES = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon.svg"];
+
 self.addEventListener("install", event => {
- event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_FILES)));
- self.skipWaiting();
+    event.waitUntil(
+        caches.open(CACHE_NAME).then(cache => cache.addAll(APP_FILES))
+    );
+    self.skipWaiting();
 });
+
 self.addEventListener("activate", event => {
- event.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key)))));
- self.clients.claim();
+    event.waitUntil(
+        caches.keys().then(keys => Promise.all(
+            keys
+                .filter(key => key.startsWith("zikir-takip-") && key !== CACHE_NAME)
+                .map(key => caches.delete(key))
+        )).then(() => self.clients.claim())
+    );
 });
+
+// İnternet varken her zaman güncel dosyayı getir; bağlantı yoksa önbelleği kullan.
 self.addEventListener("fetch", event => {
- if (event.request.method !== "GET" || new URL(event.request.url).origin !== self.location.origin) return;
- if (event.request.mode === "navigate") {
-  event.respondWith(fetch(event.request).then(response => {
-   const copy=response.clone(); caches.open(CACHE_NAME).then(cache=>cache.put("./index.html",copy)); return response;
-  }).catch(()=>caches.match("./index.html")));
-  return;
- }
- event.respondWith(caches.match(event.request).then(cached => cached || fetch(event.request).then(response => {
-  if(response.ok){const copy=response.clone();caches.open(CACHE_NAME).then(cache=>cache.put(event.request,copy));}
-  return response;
- })));
+    if (event.request.method !== "GET") return;
+
+    const requestURL = new URL(event.request.url);
+    if (requestURL.origin !== self.location.origin) return;
+
+    event.respondWith(
+        fetch(event.request).then(response => {
+            if (response && response.ok) {
+                const copy = response.clone();
+                event.waitUntil(
+                    caches.open(CACHE_NAME).then(cache => cache.put(event.request, copy))
+                );
+            }
+            return response;
+        }).catch(async () => {
+            const cached = await caches.match(event.request);
+            if (cached) return cached;
+
+            if (event.request.mode === "navigate") {
+                return (await caches.match("./index.html")) || Response.error();
+            }
+            return Response.error();
+        })
+    );
 });
