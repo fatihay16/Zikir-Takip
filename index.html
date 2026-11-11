@@ -622,7 +622,37 @@ function addGeneral(n){state.general=(state.general||0)+n;save();document.getEle
 function resetGeneral(){state.general=0;save();document.getElementById('matikNumber').textContent=0;flashMessage('Genel sayaç sıfırlandı')}
 function render(){
  const d=new Date(),day=d.getDay();document.getElementById('todayDate').textContent=d.toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric',weekday:'long'});
- let hijriText='';try{const hp=new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura',{day:'numeric',month:'numeric',year:'numeric'}).formatToParts(d);const hv=Object.fromEntries(hp.filter(p=>p.type!=='literal').map(p=>[p.type,p.value]));const hm=['','Muharrem','Safer','Rebiülevvel','Rebiülahir','Cemaziyelevvel','Cemaziyelahir','Recep','Şaban','Ramazan','Şevval','Zilkade','Zilhicce'];const monthNo=Number(hv.month);if(!hv.day||!hv.year||!hm[monthNo])throw new Error('Hicri tarih okunamadı');hijriText=`${hv.day} ${hm[monthNo]} ${hv.year}`}catch(e){hijriText=''}document.getElementById('hijriHint').textContent=(hijriText?hijriText+' • ':'')+weekdayNames[day]+' • Günlük zikir listen';const weekIndex=(day+6)%7;renderList('weekdayList',days[weekIndex],'week');renderList('evradList',evrad,'evrad');renderList('hibeList',hibe,'hibe');renderList('duaList',[['1','Dua']],'dua');
+ let hijriText='';
+ // Diyanet Türkiye takvimindeki ay başlangıçları. Gün hesabı yerel saat diliminden
+ // etkilenmemesi için UTC günleri üzerinden yapılır.
+ const hijriStarts=[
+  ['2026-06-16',1,'Muharrem',1448],['2026-07-15',1,'Safer',1448],
+  ['2026-08-14',1,'Rebiülevvel',1448],['2026-09-12',1,'Rebiülahir',1448],
+  ['2026-10-12',1,'Cemaziyelevvel',1448],['2026-11-10',1,'Cemaziyelahir',1448],
+  ['2026-12-10',1,'Recep',1448],['2027-01-09',1,'Şaban',1448],
+  ['2027-02-08',1,'Ramazan',1448],['2027-03-09',1,'Şevval',1448],
+  ['2027-04-08',1,'Zilkade',1448],['2027-05-07',1,'Zilhicce',1448],
+  ['2027-06-06',1,'Muharrem',1449]
+ ];
+ try{
+  const todayUtc=Date.UTC(d.getFullYear(),d.getMonth(),d.getDate());
+  let active=null;
+  for(const item of hijriStarts){
+   const parts=item[0].split('-').map(Number),startUtc=Date.UTC(parts[0],parts[1]-1,parts[2]);
+   if(startUtc<=todayUtc)active={item,startUtc};else break;
+  }
+  if(active){
+   const elapsed=Math.floor((todayUtc-active.startUtc)/86400000);
+   hijriText=(elapsed+1)+' '+active.item[2]+' '+active.item[3];
+  }else{
+   // Takvim tablosunun kapsamadığı eski tarihler için geriye dönük genel takvim.
+   const hp=new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura',{day:'numeric',month:'numeric',year:'numeric'}).formatToParts(d);
+   const hv=Object.fromEntries(hp.filter(p=>p.type!=='literal').map(p=>[p.type,p.value]));
+   const hm=['','Muharrem','Safer','Rebiülevvel','Rebiülahir','Cemaziyelevvel','Cemaziyelahir','Recep','Şaban','Ramazan','Şevval','Zilkade','Zilhicce'];
+   const monthNo=Number(hv.month);
+   if(hv.day&&hv.year&&hm[monthNo])hijriText=hv.day+' '+hm[monthNo]+' '+hv.year;
+  }
+ }catch(e){hijriText=''}document.getElementById('hijriHint').textContent=(hijriText?hijriText+' • ':'')+weekdayNames[day]+' • Günlük zikir listen';const weekIndex=(day+6)%7;renderList('weekdayList',days[weekIndex],'week');renderList('evradList',evrad,'evrad');renderList('hibeList',hibe,'hibe');renderList('duaList',[['1','Dua']],'dua');
  document.getElementById('matikNumber').textContent=state.general||0;
  const items=[...days[weekIndex],...evrad,...hibe,[1,'Dua']],groups=['week','evrad','hibe','dua'];let total=items.length,completed=0;
  groups.forEach((g)=>{let arr=g==='week'?days[weekIndex]:g==='evrad'?evrad:g==='hibe'?hibe:[['1','Dua']];arr.forEach((_,i)=>{if(state[keyFor(g,i)]?.done)completed++})});
