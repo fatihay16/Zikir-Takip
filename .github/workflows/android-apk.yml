@@ -92,11 +92,11 @@ jobs:
               raise SystemExit("buildTypes içindeki release yapılandırması bulunamadı")
           # Release bloğunun açılış satırının hemen altına ekle; kapanış
           # parantezinin girintisine bağlı kalma.
-          line_end = s.find("\\n", release_pos)
+          line_end = s.find("\n", release_pos)
           if line_end < 0:
               raise SystemExit("Release yapılandırması satırı okunamadı")
           if "signingConfig signingConfigs.release" not in s[release_pos:release_pos + 1200]:
-              s = s[:line_end + 1] + "            signingConfig signingConfigs.release\\n" + s[line_end + 1:]
+              s = s[:line_end + 1] + "            signingConfig signingConfigs.release\n" + s[line_end + 1:]
           p.write_text(s)
           PY
 
