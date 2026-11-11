@@ -554,7 +554,7 @@ async function initPersistentStorage(){
 }
 function updateStorageStatus(message){
  const el=document.getElementById('storageStatus');
- if(el)el.textContent=message||(navigator.storage&&navigator.storage.persisted?'Cihazda kalıcı depolama etkin':'Cihazda yerel kayıt etkin');
+ if(el)el.textContent=message||'Cihazda yerel kayıt etkin';
 }
 function saveLibraryState(){writePersistentCopy('library',libraryState)}
 const nefisZikirleri=[
