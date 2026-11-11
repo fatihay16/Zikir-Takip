@@ -583,10 +583,17 @@ function openNefisZikirleri(){document.getElementById('libraryCategories').class
 function renderNefisZikirleri(){
  const host=document.getElementById('nefisZikirList');if(!host)return;
  host.innerHTML=nefisZikirleri.map((z,i)=>{
-  const count=Number(libraryState[z.id]?.count)||0,done=count>=z.target;
+  const rec=libraryState[z.id]||{},count=Number(rec.count)||0,done=!!rec.done,targetReached=count>=z.target;
   const note=z.note?' • '+z.note:'';
-  return '<div class="zikr library-zikr"><div class="library-zikr-order">'+(i+1)+'</div><div class="ztext">'+z.name+'<small>'+z.target.toLocaleString('tr-TR')+' defa hedef'+note+'</small></div><div class="counter"><span class="count">'+count.toLocaleString('tr-TR')+' / '+z.target.toLocaleString('tr-TR')+'</span><button type="button" class="btn plus" onclick="openLibraryZikirmatik(\''+z.id+'\','+z.target+','+JSON.stringify(z.name).replace(/"/g,'&quot;')+')">☾ Sayacı Aç</button>'+(done?'<span class="library-done">✓ Hedef tamamlandı</span>':'')+'</div></div>';
+  return '<div class="zikr library-zikr"><div class="library-zikr-order">'+(i+1)+'</div><div class="ztext">'+z.name+'<small>'+z.target.toLocaleString('tr-TR')+' defa hedef'+note+'</small></div><div class="counter"><span class="count">'+count.toLocaleString('tr-TR')+' / '+z.target.toLocaleString('tr-TR')+'</span><button type="button" class="btn plus" onclick="openLibraryZikirmatik(\''+z.id+'\','+z.target+','+JSON.stringify(z.name).replace(/"/g,'&quot;')+')">☾ Sayacı Aç</button><button type="button" class="btn '+(done?'done':'complete')+'" onclick="toggleNefisDone(\''+z.id+'\')">'+(done?'✓ Tamamlandı':'Tamamla')+'</button>'+(targetReached?'<span class="library-done">✓ Hedef sayısına ulaşıldı</span>':'')+'</div></div>';
  }).join('');
+}
+function toggleNefisDone(key){
+ const rec=libraryState[key]||(libraryState[key]={count:0});
+ rec.done=!rec.done;
+ saveLibraryState();
+ renderNefisZikirleri();
+ flashMessage(rec.done?'Zikir tamamlandı olarak işaretlendi':'Tamamlandı işareti kaldırıldı');
 }
 function openLibraryZikirmatik(key,target,name){
  activeZikirmatikStore='library';activeZikirmatikKey=key;activeZikirmatikTarget=Number(target)||0;activeZikirmatikName=name||'Zikir';
@@ -615,7 +622,7 @@ function addGeneral(n){state.general=(state.general||0)+n;save();document.getEle
 function resetGeneral(){state.general=0;save();document.getElementById('matikNumber').textContent=0;flashMessage('Genel sayaç sıfırlandı')}
 function render(){
  const d=new Date(),day=d.getDay();document.getElementById('todayDate').textContent=d.toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric',weekday:'long'});
- let hijriText='';try{hijriText=new Intl.DateTimeFormat('tr-TR-u-ca-islamic',{day:'numeric',month:'long',year:'numeric'}).format(d)}catch(e){hijriText=''}document.getElementById('hijriHint').textContent=(hijriText?'Hicrî '+hijriText+' • ':'')+weekdayNames[day]+' • Günlük zikir listen';const weekIndex=(day+6)%7;renderList('weekdayList',days[weekIndex],'week');renderList('evradList',evrad,'evrad');renderList('hibeList',hibe,'hibe');renderList('duaList',[['1','Dua']],'dua');
+ let hijriText='';try{hijriText=new Intl.DateTimeFormat('tr-TR-u-ca-islamic',{day:'numeric',month:'long',year:'numeric'}).format(d)}catch(e){hijriText=''}document.getElementById('hijriHint').textContent=(hijriText?hijriText+' • ':'')+weekdayNames[day]+' • Günlük zikir listen';const weekIndex=(day+6)%7;renderList('weekdayList',days[weekIndex],'week');renderList('evradList',evrad,'evrad');renderList('hibeList',hibe,'hibe');renderList('duaList',[['1','Dua']],'dua');
  document.getElementById('matikNumber').textContent=state.general||0;
  const items=[...days[weekIndex],...evrad,...hibe,[1,'Dua']],groups=['week','evrad','hibe','dua'];let total=items.length,completed=0;
  groups.forEach((g)=>{let arr=g==='week'?days[weekIndex]:g==='evrad'?evrad:g==='hibe'?hibe:[['1','Dua']];arr.forEach((_,i)=>{if(state[keyFor(g,i)]?.done)completed++})});
