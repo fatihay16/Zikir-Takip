@@ -83,11 +83,21 @@ jobs:
               if marker not in s:
                   raise SystemExit("Gradle imza bölümü bulunamadı")
               s = s.replace(marker, signing + marker, 1)
+          build_types = s.find(marker)
+          if build_types < 0:
+              raise SystemExit("buildTypes bölümü bulunamadı")
           target = "        release {"
-          if "signingConfig signingConfigs.release" not in s:
-              if target not in s:
-                  raise SystemExit("Release yapılandırması bulunamadı")
-              s = s.replace(target, target + "\n            signingConfig signingConfigs.release", 1)
+          release_pos = s.find(target, build_types)
+          if release_pos < 0:
+              raise SystemExit("buildTypes içindeki release yapılandırması bulunamadı")
+          release_end = s.find("\\n        }", release_pos)
+          if release_end < 0:
+              raise SystemExit("Release yapılandırmasının sonu bulunamadı")
+          release_block = s[release_pos:release_end]
+          if "signingConfig signingConfigs.release" not in release_block:
+              s = s[:release_pos] + release_block.replace(
+                  target, target + "\\n            signingConfig signingConfigs.release", 1
+              ) + s[release_end:]
           p.write_text(s)
           PY
 
