@@ -428,7 +428,7 @@ html[data-theme="dark"] .mobile-nav{background:rgba(8,29,20,.98);border-color:#8
         <button id="themeToggle" class="btn reset" onclick="toggleTheme()">🌙　Koyu temayı aç</button>
         <div class="divider"></div>
         <h3 style="font-weight:normal;margin:0 0 8px">Kayıtların</h3>
-        <p style="color:#7d806f;line-height:1.6">Sayaçların ve tamamlanma işaretlerin bu cihazın tarayıcısında saklanır. Tarayıcı verilerini temizlersen kayıtlar silinebilir.</p>
+        <p style="color:#7d806f;line-height:1.6">Sayaçların internet üzerinden hiçbir yere gönderilmez. Cihazında IndexedDB ve ikinci kopya olarak tarayıcı belleğinde saklanır. Tarayıcı verilerini veya uygulama verilerini tamamen silersen kayıtlar yine kaybolabilir.</p><p id="storageStatus" style="font-size:13px;color:#287247;margin:8px 0 12px">Yerel kayıt sistemi hazırlanıyor…</p>
         <button class="btn reset" onclick="exportBackup()">⬇　Yedeği indir</button>
         <button class="btn reset" onclick="document.getElementById('restoreFile').click()">⬆　Yedekten geri yükle</button>
         <input id="restoreFile" type="file" accept="application/json" class="hidden" onchange="restoreBackup(event)">
@@ -503,7 +503,60 @@ const hibe=[['100','Estağfirullâh el-Azîm'],['20','Fâtiha-i Şerife'],['20',
 const weekdayNames=['Pazar','Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi'];
 let state={};try{state=JSON.parse(localStorage.getItem('zikirTakipState')||'{}')||{};}catch(e){state={};}
 let libraryState={};try{libraryState=JSON.parse(localStorage.getItem('zikirKutuphaneState')||'{}')||{};}catch(e){libraryState={};}
-function saveLibraryState(){localStorage.setItem('zikirKutuphaneState',JSON.stringify(libraryState))}
+
+// Yerel ve çevrimdışı kalıcı kayıt: IndexedDB ana depo, localStorage hızlı ikinci kopya.
+let zikirDbPromise=null;
+function openZikirDatabase(){
+ if(!('indexedDB' in window))return Promise.reject(new Error('IndexedDB desteklenmiyor'));
+ if(!zikirDbPromise)zikirDbPromise=new Promise((resolve,reject)=>{
+  const req=indexedDB.open('ZikirTakipKaliciKayit',1);
+  req.onupgradeneeded=()=>{const db=req.result;if(!db.objectStoreNames.contains('records'))db.createObjectStore('records')};
+  req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error||new Error('Veritabanı açılamadı'));
+ });
+ return zikirDbPromise;
+}
+function idbRead(key){
+ return openZikirDatabase().then(db=>new Promise((resolve,reject)=>{
+  const tx=db.transaction('records','readonly'),req=tx.objectStore('records').get(key);
+  req.onsuccess=()=>resolve(req.result||null);req.onerror=()=>reject(req.error);
+ }));
+}
+function idbWrite(key,value){
+ return openZikirDatabase().then(db=>new Promise((resolve,reject)=>{
+  const tx=db.transaction('records','readwrite');tx.objectStore('records').put(value,key);
+  tx.oncomplete=()=>resolve(true);tx.onerror=()=>reject(tx.error||new Error('Kayıt yazılamadı'));tx.onabort=()=>reject(tx.error||new Error('Kayıt iptal edildi'));
+ }));
+}
+function writePersistentCopy(key,data){
+ const updatedAt=Date.now();
+ try{localStorage.setItem(key==='daily'?'zikirTakipState':'zikirKutuphaneState',JSON.stringify(data));localStorage.setItem('zikirSavedAt_'+key,String(updatedAt))}catch(e){console.warn('İkincil yerel kayıt yapılamadı:',e)}
+ idbWrite(key,{data,updatedAt}).then(()=>updateStorageStatus()).catch(e=>{console.error('IndexedDB kayıt hatası:',e);updateStorageStatus('Yedek yerel kayıt etkin; IndexedDB yazılamadı')});
+}
+async function initPersistentStorage(){
+ try{
+  const [dailyRecord,libraryRecord]=await Promise.all([idbRead('daily'),idbRead('library')]);
+  const localDailyAt=Number(localStorage.getItem('zikirSavedAt_daily'))||0;
+  const localLibraryAt=Number(localStorage.getItem('zikirSavedAt_library'))||0;
+  if(dailyRecord&&dailyRecord.updatedAt>=localDailyAt&&dailyRecord.data&&typeof dailyRecord.data==='object')state=dailyRecord.data;
+  if(libraryRecord&&libraryRecord.updatedAt>=localLibraryAt&&libraryRecord.data&&typeof libraryRecord.data==='object')libraryState=libraryRecord.data;
+  // İlk açılışta mevcut localStorage kayıtlarını IndexedDB'ye aktar; sayaçları değiştirme.
+  writePersistentCopy('daily',state);writePersistentCopy('library',libraryState);
+  let persistent=false;
+  try{if(navigator.storage&&navigator.storage.persist)persistent=await navigator.storage.persist()}catch(e){}
+  updateStorageStatus(persistent?'Cihazda kalıcı depolama izni alındı':'Cihazda yerel kayıt etkin');
+ }catch(e){
+  console.error('Kalıcı kayıt başlatılamadı:',e);
+  updateStorageStatus('IndexedDB açılamadı; tarayıcı yerel kaydı kullanılıyor');
+ }
+ normalizeCompletedZikirCounts();
+ render();
+ renderNefisZikirleri();
+}
+function updateStorageStatus(message){
+ const el=document.getElementById('storageStatus');
+ if(el)el.textContent=message||(navigator.storage&&navigator.storage.persisted?'Cihazda kalıcı depolama etkin':'Cihazda yerel kayıt etkin');
+}
+function saveLibraryState(){writePersistentCopy('library',libraryState)}
 const nefisZikirleri=[
  {id:'nefis_01',name:'Lâ ilâhe illallah',target:100000,note:'Her nefes almak için durulduğunda Muhammedün Resûlullah denir.'},
  {id:'nefis_02',name:'Yâ Allah',target:100000},
@@ -522,7 +575,7 @@ const nefisZikirleri=[
  {id:'nefis_15',name:'Yâ Rahîm',target:100000}
 ];
 const dateKey=()=>{let d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
-function save(){localStorage.setItem('zikirTakipState',JSON.stringify(state))}
+function save(){writePersistentCopy('daily',state)}
 function keyFor(group,i){return dateKey()+'_'+group+'_'+i}
 function openZikirLibrary(){showPage('library');backToZikirCategories()}
 function backToZikirCategories(){document.getElementById('libraryCategories').classList.remove('hidden');document.getElementById('nefisCategoryDetail').classList.add('hidden');window.scrollTo({top:0,behavior:'smooth'})}
@@ -720,8 +773,7 @@ function toggleTheme(){
 }
 try{applyTheme(localStorage.getItem('zikirTheme')==='dark'?'dark':'light')}catch(e){applyTheme('light')}
 
-normalizeCompletedZikirCounts();
-render();
+initPersistentStorage();
 </script>
 <script>
 if ("serviceWorker" in navigator) {
