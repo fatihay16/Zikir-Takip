@@ -1,4 +1,4 @@
-const CACHE_NAME = "zikir-takip-v3";
+const CACHE_NAME = "zikir-takip-v4";
 const APP_FILES = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon.svg"];
 
 self.addEventListener("install", event => {
